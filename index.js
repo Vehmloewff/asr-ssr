@@ -1,14 +1,22 @@
 const stateState = require('./lib/state-state');
+const routesHolder = require('./lib/routes-holder');
 
 function createStateRouter(makeRenderer) {
 	const renderer = makeRenderer();
 	const states = stateState();
+	const routes = routesHolder();
 
-	function addState({ name, template }) {
-		states.add(name, { template });
+	function addState({ name, route, template }) {
+		states.add(name, { template, route, name });
+		routes.addRoute({
+			route: states.buildFullStateRoute(name),
+			name,
+		});
 	}
 
-	async function renderStatic(name) {
+	async function renderStatic(route) {
+		const name = routes.getNameFromRoute(route);
+
 		const hierarchy = states.getHierarchy(name);
 
 		const makeState = async (parentChunk, childTemplate) => {

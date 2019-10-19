@@ -27,7 +27,6 @@
 	},
 	"dependencies": {
 		"abstract-state-router": "^6.1.0",
-		"debug": "^4.1.1",
 		"delay": "^4.3.0",
 		"path-to-regexp-with-reversible-keys": "^1.0.3"
 	}
