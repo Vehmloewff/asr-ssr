@@ -1,22 +1,35 @@
-const cbPromise = require('./lib/cb-promise');
+const stateState = require('./lib/state-state');
 
-function createStateRouter(makeRenderer, options) {
-	console.log(options);
-
+function createStateRouter(makeRenderer) {
 	const renderer = makeRenderer();
-
-	let states = {};
+	const states = stateState();
 
 	function addState({ name, template }) {
-		states[name] = { template };
+		states.add(name, { template });
 	}
 
-	async function renderStatic(route) {
-		const { template } = states[route];
+	async function renderStatic(name) {
+		const hierarchy = states.getHierarchy(name);
 
-		const staticHTML = await cbPromise(renderer.renderStatic, { template });
+		const makeState = async (parentChunk, childTemplate) => {
+			const childChunk = await renderer.renderStatic({
+				template: childTemplate,
+			});
+			return renderer.insertChild({ parentChunk, childChunk });
+		};
 
-		return staticHTML;
+		let lastChunk = null;
+		for (let i in hierarchy) {
+			const template = hierarchy[i].template;
+
+			if (!lastChunk) {
+				lastChunk = await renderer.renderStatic({ template });
+			} else {
+				lastChunk = await makeState(lastChunk, template);
+			}
+		}
+
+		return lastChunk;
 	}
 
 	return {
