@@ -18,10 +18,11 @@ describe(`The Basic Functionality`, () => {
 
 		router.addState({
 			name: 'contacts',
+			route: '/contacts',
 			template,
 		});
 
-		const staticHTML = await router.renderStatic('contacts');
+		const staticHTML = await router.renderStatic('/contacts');
 
 		expect(staticHTML).toBe(template);
 	});
@@ -33,15 +34,17 @@ describe(`The Basic Functionality`, () => {
 
 		router.addState({
 			name: 'contacts',
+			route: '/',
 			template: contactsTemplate,
 		});
 		router.addState({
 			name: 'list',
+			route: '/list',
 			template: listTemplate,
 		});
 
-		expect(await router.renderStatic('contacts')).toBe(contactsTemplate);
-		expect(await router.renderStatic('list')).toBe(listTemplate);
+		expect(await router.renderStatic('/')).toBe(contactsTemplate);
+		expect(await router.renderStatic('/list')).toBe(listTemplate);
 	});
 
 	it(`should return child states`, async () => {
@@ -52,13 +55,15 @@ describe(`The Basic Functionality`, () => {
 
 		router.addState({
 			name: 'app',
+			route: '/app',
 			template: app,
 		});
 		router.addState({
 			name: 'app.user',
+			route: '/user',
 			template: user,
 		});
 
-		expect(await router.renderStatic(`app.user`)).toBe(appUser);
+		expect(await router.renderStatic(`/app/user`)).toBe(appUser);
 	});
 });
