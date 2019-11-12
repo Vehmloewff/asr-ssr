@@ -15,7 +15,7 @@ function createStateRouter(makeRenderer) {
 	}
 
 	async function renderStatic(route) {
-		const name = routes.getNameFromRoute(route);
+		const { name } = routes.getNameFromRoute(route);
 
 		const hierarchy = states.getHierarchy(name);
 

@@ -12,7 +12,7 @@ function renderer() {
 }
 
 describe(`params`, () => {
-	it(`should return params`, () => {
+	it(`should return params`, async () => {
 		const router = createStateRouter(renderer);
 
 		router.addState({
@@ -26,7 +26,7 @@ describe(`params`, () => {
 			template: `<h1>Hello user!</h1>`,
 		});
 
-		expect(router.renderStatic('/app/user/Vehmloewff')).toBe(
+		expect(await router.renderStatic('/user/this')).toBe(
 			`<navbar></navbar><h1>Hello user!</h1>`
 		);
 	});
