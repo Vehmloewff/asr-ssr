@@ -6,8 +6,8 @@ function createStateRouter(makeRenderer) {
 	const states = stateState();
 	const routes = routesHolder();
 
-	function addState({ name, route, template }) {
-		states.add(name, { template, route, name });
+	function addState({ name, route, template, resolve }) {
+		states.add(name, { template, route, name, resolve });
 		routes.addRoute({
 			route: states.buildFullStateRoute(name),
 			name,
@@ -15,25 +15,34 @@ function createStateRouter(makeRenderer) {
 	}
 
 	async function renderStatic(route) {
-		const { name } = routes.getNameFromRoute(route);
+		const { name, params } = routes.getNameFromRoute(route);
 
 		const hierarchy = states.getHierarchy(name);
 
-		const makeState = async (parentChunk, childTemplate) => {
+		const makeState = async (parentChunk, childTemplate, content) => {
 			const childChunk = await renderer.renderStatic({
 				template: childTemplate,
+				paramaters: params,
+				content,
 			});
 			return renderer.insertChild({ parentChunk, childChunk });
 		};
 
 		let lastChunk = null;
 		for (let i in hierarchy) {
-			const template = hierarchy[i].template;
+			const state = hierarchy[i];
+
+			const data =
+				(state.resolve && state.resolve(state, params)) || null;
 
 			if (!lastChunk) {
-				lastChunk = await renderer.renderStatic({ template });
+				lastChunk = await renderer.renderStatic({
+					template: state.template,
+					paramaters: params,
+					content: data,
+				});
 			} else {
-				lastChunk = await makeState(lastChunk, template);
+				lastChunk = await makeState(lastChunk, state.template, data);
 			}
 		}
 
