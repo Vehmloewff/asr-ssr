@@ -33,7 +33,7 @@ function createStateRouter(makeRenderer) {
 			const state = hierarchy[i];
 
 			const data =
-				(state.resolve && state.resolve(state, params)) || null;
+				(state.resolve && (await state.resolve(state, params))) || null;
 
 			if (!lastChunk) {
 				lastChunk = await renderer.renderStatic({
